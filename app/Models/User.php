@@ -16,7 +16,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $guarded = []; /*TODO: unsafe?*/
+    protected $guarded = []; /*unsafe?*/
 
     /**
      * The attributes that should be hidden for serialization.
@@ -39,5 +39,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function sentMessages()
+    {
+        return $this->hasMany(Message::class, 'sender_username');
+    }
+
+    public function receivedMessages()
+    {
+        return $this->hasMany(Message::class, 'recipient_username');
     }
 }
