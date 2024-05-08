@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Message;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -24,10 +25,12 @@ class MessageFactory extends Factory
      */
     public function definition(): array
     {
+        $sender = User::inRandomOrder()->first();
+        $recipient = User::where('username', '!=', $sender->username)->inRandomOrder()->first();
 
         return [
-            'sender_username' => fake()->username(),
-            'recipient_username' => fake()->userName(),
+            'sender_username' => $sender->username,
+            'recipient_username' => $recipient->username,
             'content' => fake()->text(),
             'sent_at' => fake()->dateTimeBetween('-1 year', 'now'),
         ];

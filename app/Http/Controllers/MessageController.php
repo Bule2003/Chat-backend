@@ -14,17 +14,15 @@ class MessageController extends Controller
     public function create()
     {
         Log::debug("test");
-        /*return view('/');  // TODO: make a view with an input form to send/create a message*/
+        //return view('/');
     }
 
-    public function store(MessageRequest $request)
+    public function store(Request $request)
     {
-        Log::debug("test");
-        /*$sender = User::where('username', $request->input('sender_username'));
-        $recipient = User::where('username', $request->input('recipient_username'));*/
-
         $sender = User::query()->where('username', $request->input('sender_username'))->first();
         $recipient = User::query()->where('username', $request->input('recipient_username'))->first();
+
+        Log::debug($sender);
 
         if (!$sender) {
             return response()->json(['error' => 'Sender user not found'], 404);
@@ -35,8 +33,6 @@ class MessageController extends Controller
         }
 
         $message = Message::create([
-            //'sender_id' => $sender->id,
-            //'recipient_id' => $recipient->id,
             'sender_username' => $sender->username,
             'recipient_username' => $recipient->username,
             'content' => $request->input('content'),
@@ -65,7 +61,7 @@ class MessageController extends Controller
         return response()->json($message);
     }
 
-    public function update(MessageRequest $request, $id)
+    public function update(Request $request, $id)
     {
         $message = Message::find($id);
 
@@ -75,7 +71,7 @@ class MessageController extends Controller
 
         $message->update([
             'content' => $request->input('content'),
-            'sent_at' => now(), // optional
+            'sent_at' => now(),
         ]);
 
         return response()->json($message);

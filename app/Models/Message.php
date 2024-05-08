@@ -14,14 +14,12 @@ class Message extends Model
      *
      * @var array
      */
-    protected $guarded = [
-        'sent_at',
-    ];
 
     protected $fillable = [
         'sender_username',
         'recipient_username',
         'content',
+        'sent_at',
     ];
 
     protected array $dates = [
@@ -30,11 +28,11 @@ class Message extends Model
 
     public function sender()
     {
-        return $this->belongsTo(User::class, 'sender_username');
+        return $this->belongsTo(User::class, 'sender_username', 'username');
     }
 
     public function recipient()
     {
-        return $this->belongsTo(User::class, 'recipient_username');
+        return $this->belongsTo(User::class, 'recipient_username', 'username');
     }
 }
