@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\SendMessageEvent;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
@@ -18,17 +19,18 @@ class ConversationController extends Controller
             return response()->json(['message' => 'You cannot send a message to yourself']);
         }
 
-        $OtherUserId = User::where('name', $request->to)->first->id;
-        $collection = $this->IsTherePreviousChat($OtherUserId, auth('sanctum')->user()->id);
+        $sender = User::query()->where('username', $request->input('sender_username'))->first();
+        $recipient = User::query()->where('username', $request->input('recipient_username'))->first();
 
-        if($collection == false){
+        $collection = $this->IsTherePreviousConversation($recipient->username, auth('sanctum')->user()->id);
+
+        if(!$collection){
             $conversation = Conversation::create([
                 'user_id' => auth('sanctum')->user()->id
             ]);
         }
 
-        $sender = User::query()->where('username', $request->input('sender_username'))->first();
-        $recipient = User::query()->where('username', $request->input('recipient_username'))->first();
+
 
         $message = Message::create([
             'sender_username' => $sender->username,
@@ -93,14 +95,14 @@ class ConversationController extends Controller
         //
     }
 
-    private function IsTherePreviousConversation($OtherUserId, $user_id) // TODO: change to usernames
+    private function IsTherePreviousConversation($sender_username, $recipient_username)
     {
-        $collection = Message::whereHas('conversation', function ($q) use ($OtherUserId, $user_id) { // TODO: add whereHas method
-        $q->where('sender_username', $OtherUserId)
-            ->where('recipient_username', $user_id);
-        })->orWhere(function ($q) use ($OtherUserId, $user_id) {
-            $q->where('sender_username', $user_id)
-                ->where('recipient_username', $OtherUserId);
+        $collection = Message::whereHas('conversation', function ($q) use ($sender_username, $recipient_username) {
+            $q->where('sender_username', $sender_username)
+                ->where('recipient_username', $recipient_username);
+        })->orWhere(function ($q) use ($sender_username, $recipient_username) {
+            $q->where('sender_username', $recipient_username)
+                ->where('recipient_username', $sender_username);
         })->get();
 
         if (count($collection) > 0) {
@@ -109,4 +111,5 @@ class ConversationController extends Controller
 
         return false;
     }
+
 }

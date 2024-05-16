@@ -6,5 +6,6 @@ use App\Http\Controllers\SessionController;
 use Illuminate\Support\Facades\Route;
 
 
+Route::view('/', 'home');
 Route::view('/chat', 'chat');
 

@@ -17,12 +17,10 @@ class MessageController extends Controller
         //return view('/');
     }
 
-    public function store(Request $request)
+    public function store(MessageRequest $request)
     {
         $sender = User::query()->where('username', $request->input('sender_username'))->first();
         $recipient = User::query()->where('username', $request->input('recipient_username'))->first();
-
-        Log::debug($sender);
 
         if (!$sender) {
             return response()->json(['error' => 'Sender user not found'], 404);
@@ -61,7 +59,7 @@ class MessageController extends Controller
         return response()->json($message);
     }
 
-    public function update(Request $request, $id)
+    public function update(MessageRequest $request, $id)
     {
         $message = Message::find($id);
 

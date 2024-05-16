@@ -19,14 +19,16 @@ class RegisteredUserController extends Controller
         $attributes = request()->validate([
             'first_name' => ['required'],
             'last_name' => ['required'],
+            'username' => ['required'],
             'email' => ['required', 'email'],
             'password' => ['required', Password::min(6), 'confirmed']
         ]);
 
         $user = User::create($attributes);
 
-        Auth::login($user);
+        /*Auth::login($user);*/
+        session(['user' => $user]);
 
-        return redirect('/');
+        return response()->json(['user' => $user]);
     }
 }
