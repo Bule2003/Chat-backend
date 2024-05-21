@@ -16,8 +16,12 @@ class Conversation extends Model
      */
     protected $guarded = [];
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'conversation_user');
+    }
     public function messages()
     {
-        return $this->hasMany(Message::class);
+        return $this->hasMany(Message::class); // add keys: 'conversation_id' , 'id'
     }
 }

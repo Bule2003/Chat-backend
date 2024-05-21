@@ -16,6 +16,7 @@ class Message extends Model
      */
 
     protected $fillable = [
+        'conversation_id',
         'sender_username',
         'recipient_username',
         'content',
@@ -26,6 +27,11 @@ class Message extends Model
         'sent_at',
     ];
 
+    public function conversation()
+    {
+        return $this->belongsTo(Conversation::class); // specify from which table and the id
+    }
+
     public function sender()
     {
         return $this->belongsTo(User::class, 'sender_username', 'username');
@@ -34,10 +40,5 @@ class Message extends Model
     public function recipient()
     {
         return $this->belongsTo(User::class, 'recipient_username', 'username');
-    }
-
-    public function conversation()
-    {
-        return $this->belongsTo(Conversation::class);
     }
 }

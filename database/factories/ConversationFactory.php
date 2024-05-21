@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Conversation;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -17,7 +19,15 @@ class ConversationFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'title' => fake()->text()
         ];
+    }
+
+    public function configure()
+    {
+        return $this->afterCreating(function (Conversation $conversation) {
+            $users = User::inRandomOrder()->take(2)->pluck('id');
+            $conversation->users()->attach($users);
+        });
     }
 }

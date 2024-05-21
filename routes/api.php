@@ -14,26 +14,17 @@ use App\Http\Resources\MessageResource;
     return $request->user();
 })->middleware('auth:sanctum');*/
 
-/*Route::get('/register', [RegisteredUserController::class, 'create']);
-Route::post('/register', [RegisteredUserController::class, 'store']);*/
-
-// TODO: add login middleware
-
-/*Route::get('/login', [SessionController::class, 'create']);
-Route::post('/login', [SessionController::class, 'store']);
-Route::post('/logout', [SessionController::class, 'destroy']);*/
-
 Route::controller(AuthController::class)->group(function () {
     Route::post('login', 'login');
     Route::post('register', 'register');
-    Route::post('logout', 'logout')->middleware('auth:api', ['except' => ['login','register']]);
-    Route::post('refresh', 'refresh')->middleware('auth:api', ['except' => ['login','register']]);
+    Route::post('logout', 'logout')->middleware('auth:api');
+    Route::post('refresh', 'refresh')->middleware('auth:api');
 });
 
-Route::resource('messages', MessageController::class);
+Route::middleware('auth:api')->group(function () {
+    Route::post('SendMessage', [ConversationController::class, 'SendMessage']);
+    Route::get('conversations', [ConversationController::class, 'index']);
+    Route::get('conversations/{conversation}', [ConversationController::class, 'show']);
+});
 
-// TODO: getting all messages for a given user and sending messages
-/*Route::post('SendMessage', ConversationController::class);
-Route::get('load', MessageController::class);*/
-
-Route::resource('conversations', ConversationController::class);
+Route::get('load', [MessageController::class, 'load']);

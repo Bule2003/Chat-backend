@@ -42,6 +42,11 @@ class User extends Authenticatable implements JWTSubject
         ];
     }
 
+    public function conversations()
+    {
+        return $this->belongsToMany(Conversation::class, 'conversation_user');
+    }
+
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
      *

@@ -14,7 +14,6 @@ class MessageController extends Controller
     public function create()
     {
         Log::debug("test");
-        //return view('/');
     }
 
     public function store(MessageRequest $request)
@@ -41,7 +40,7 @@ class MessageController extends Controller
     }
 
 
-    public function index()
+    public function load()
     {
         $messages = Message::all();
 
