@@ -16,12 +16,9 @@ class ConversationController extends Controller
      */
     public function SendMessage(Request $request) // TODO: make SendMessageRequest
     {
-        logger($request->to);
-        /*if ($request->to == auth('api')->user()->id()){
-            return response()->json(['message' => 'You cannot send a message to yourself']);
-        }*/
 
         $request->validate([
+            'conversation_id' => 'required|exists:conversations,id',
             'sender_username' => 'required|string|exists:users,username',
             'recipient_username' => 'required|string|exists:users,username',
             'content' => 'required|string|max:255',
@@ -38,16 +35,10 @@ class ConversationController extends Controller
             return response()->json(['error' => 'Recipient user not found'], 404);
         }
 
-        // TODO: replace sender username back to: auth('api')->user()->id()
+        /*$conversation = Conversation::find($request->input('conversation_id'));
 
-        //$collection = $this->IsTherePreviousConversation($recipient->username, $sender->username); // TODO: change from API to sanctum **optional**
-
-        // TODO: replace sender username back to: auth('api')->user()->id()
-
-        /*if(!$collection){
-            $conversation = Conversation::create([
-                'user_id' => $sender->username
-            ]);
+        if (!$conversation) {
+            return response()->json(['error' => 'Conversation not found'], 404);
         }*/
 
         $conversation = Conversation::whereHas('users', function($q) use ($sender, $recipient) {
@@ -55,28 +46,18 @@ class ConversationController extends Controller
                 ->orWhere('user_id', $recipient->id);
         })->first();
 
-        /*$conversation = Conversation::whereHas('users', function($query) use ($sender) {
-            $query->where('user_id', $sender->id);
-        })
-            ->whereHas('users', function($query) use ($recipient) {
-                $query->where('user_id', $recipient->id);
-            })
-            ->first();*/
-
         if (!$conversation) {
             $conversation = Conversation::create();
             $conversation->users()->attach([$sender->id, $recipient->id]);
         }
 
         $message = Message::create([
-            'conversation_id' => $conversation->id,
+            'conversation_id' => $request->conversation_id,
             'sender_username' => $sender->username,
             'recipient_username' => $recipient->username,
             'content' => $request->input('content'),
             'sent_at' => now(),
         ]);
-
-        /*return $message;*/
 
         broadcast(new SendMessageEvent($message->toArray()))->toOthers(); // TODO: create class for sending messages
 
@@ -85,18 +66,17 @@ class ConversationController extends Controller
 
     public function index()
     {
-        $user = User::query()->where('id', auth()->id())->first();
+        $user = auth()->user();
 
-        /*$conversations = Conversation::query()->where('sender_id', auth()->id())
-            ->orWhere('recipient_id', auth()->id())
-            ->with('messages')
-            ->get();*/
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
 
-        $conversations = Conversation::whereHas('users', function($q) use ($user) {
-            $q->where('user_id', $user->id);
-        })->with('messages')->get();
+        // TODO: lazy load the conversations
 
-        $conversations = Conversation::all();
+        $conversations = $user->conversations()->with(['messages', 'users'])->paginate(20); // paginate or get all at once
+
+        logger($conversations);
 
         return response()->json($conversations);
     }
@@ -104,9 +84,33 @@ class ConversationController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required|string',
+            'recipient_username' => 'required|string'
+        ]);
+
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 404);
+        }
+
+        $recipient = User::where('username', $request->input('recipient_username'))->first();
+
+        if (!$recipient) {
+           return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $conversation = Conversation::create([
+            'title' => $request->input('title'),
+            /*'title' => $request->title,*/
+        ]);
+
+        $conversation->users()->attach([$user->id, $recipient->id]);
+
+        return response()->json(['message' => 'Conversation created successfully', 'conversation' => $conversation]);
     }
 
     /**

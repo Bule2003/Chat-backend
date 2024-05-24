@@ -17,12 +17,15 @@ return new class extends Migration
             $table->unsignedBigInteger('conversation_id');
             $table->timestamps();
 
-            // Additional columns for the pivot data
-
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('conversation_id')->references('id')->on('conversations')->onDelete('cascade');
 
-           /* $table->primary(['user_id', 'conversation_id']);*/
+
+            // TODO: replace current code with this
+            /*$table->id();
+            $table->foreignId('conversation_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->timestamps();*/
         });
     }
 
