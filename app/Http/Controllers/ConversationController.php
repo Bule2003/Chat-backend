@@ -154,9 +154,29 @@ class ConversationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Conversation $conversation)
+    public function destroy($id)
     {
-        //
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['message', 'Unauthorized'], 401);
+        }
+
+        $conversation = Conversation::find($id);
+
+        if (!$conversation) {
+            return response()->json(['message' => 'Conversation not found'], 404);
+        }
+
+        $conversation->users()->detach($user->id);
+
+        if($conversation->users()->count() === 0) {
+            Message::where('conversation_id', $conversation->id)->delete();
+            $conversation->delete();
+        }
+
+
+        return response()->json(['message' => 'Conversation deleted successfully']);
     }
 
     private function IsTherePreviousConversation($sender_username, $recipient_username)

@@ -22,6 +22,7 @@ Route::controller(AuthController::class)->group(function () {
 });
 
 Route::post('conversations', [ConversationController::class, 'create'])->middleware('auth:api');
+Route::delete('conversations/{conversation}', [ConversationController::class, 'destroy'])->middleware('auth:api');
 
 Route::middleware('auth:api')->group(function () {
     Route::post('SendMessage', [ConversationController::class, 'SendMessage']);
