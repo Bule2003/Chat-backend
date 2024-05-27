@@ -138,17 +138,45 @@ class ConversationController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Conversation $conversation)
+    public function edit(Request $request, $id)
     {
-        //
+        /*$conversation = Conversation::find($id);
+
+        logger($conversation);
+
+        if (!$conversation) {
+            return response()->json(['message' => 'Conversation not found'], 404);
+        }
+
+        $conversation->update([
+            'title' => $request->title
+        ]);
+
+        return response()->json(['message' => 'Conversation updated successfully']);*/
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Conversation $conversation)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'title' => 'required|string'
+        ]);
+
+        $conversation = Conversation::find($id);
+
+        logger($conversation);
+
+        if (!$conversation) {
+            return response()->json(['message' => 'Conversation not found'], 404);
+        }
+
+        $conversation->update([
+           'title' => $request->title
+        ]);
+
+        return response()->json(['message' => 'Conversation updated successfully']);
     }
 
     /**
@@ -174,7 +202,6 @@ class ConversationController extends Controller
             Message::where('conversation_id', $conversation->id)->delete();
             $conversation->delete();
         }
-
 
         return response()->json(['message' => 'Conversation deleted successfully']);
     }

@@ -62,6 +62,8 @@ class MessageController extends Controller
     {
         $message = Message::find($id);
 
+        logger($message);
+
         if(!$message){
             return response()->json(['message' => 'Message not found'], 404);
         }

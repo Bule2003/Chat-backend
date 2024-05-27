@@ -30,8 +30,8 @@ class MessageRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'sender_username' => 'required|string',
-            'recipient_username' => 'required|string',
+            'sender_username' => 'string',
+            'recipient_username' => 'string',
             'content' => 'required|string',
         ];
     }

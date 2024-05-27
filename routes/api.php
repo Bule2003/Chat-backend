@@ -27,8 +27,10 @@ Route::delete('conversations/{conversation}', [ConversationController::class, 'd
 Route::middleware('auth:api')->group(function () {
     Route::post('SendMessage', [ConversationController::class, 'SendMessage']);
     Route::get('conversations', [ConversationController::class, 'index']);
-    Route::get('messages/{conversation}', [MessageController::class, 'index']);
     Route::get('conversations/{conversation}', [ConversationController::class, 'show']);
+    Route::put('conversations/{conversation}', [ConversationController::class, 'update']);
+    Route::get('messages/{conversation}', [MessageController::class, 'index']);
+    Route::put('messages/{id}', [MessageController::class, 'update'])->middleware('auth:api');
 });
 
 Route::get('load', [MessageController::class, 'load']);
