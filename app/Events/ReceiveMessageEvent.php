@@ -10,17 +10,16 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class SendMessageEvent
+class ReceiveMessageEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     /**
      * Create a new event instance.
      */
-    private array $arr;
-    public function __construct($message)
+    public function __construct()
     {
-        $this->arr = $message;
+        //
     }
 
     /**
@@ -31,12 +30,7 @@ class SendMessageEvent
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('conversation'),
+            new PrivateChannel('channel-name'),
         ];
-    }
-
-    public function broadcastWith() :array
-    {
-        return $this->arr;
     }
 }

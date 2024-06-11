@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\SendMessageEvent;
+use App\Events\MessageSent;
 use App\Models\Conversation;
 use App\Models\Message;
 use App\Models\User;
 use http\Env\Response;
 use Illuminate\Http\Request;
+use Laravel\Reverb\Loggers\Log;
 
 class ConversationController extends Controller
 {
@@ -16,7 +17,6 @@ class ConversationController extends Controller
      */
     public function SendMessage(Request $request) // TODO: make SendMessageRequest
     {
-
         $request->validate([
             'conversation_id' => 'required|exists:conversations,id',
             'sender_username' => 'required|string|exists:users,username',
@@ -34,12 +34,6 @@ class ConversationController extends Controller
         if (!$recipient) {
             return response()->json(['error' => 'Recipient user not found'], 404);
         }
-
-        /*$conversation = Conversation::find($request->input('conversation_id'));
-
-        if (!$conversation) {
-            return response()->json(['error' => 'Conversation not found'], 404);
-        }*/
 
         $conversation = Conversation::whereHas('users', function($q) use ($sender, $recipient) {
             $q->where('user_id', $sender->id)
@@ -59,7 +53,12 @@ class ConversationController extends Controller
             'sent_at' => now(),
         ]);
 
-        broadcast(new SendMessageEvent($message->toArray()))->toOthers(); // TODO: create class for sending messages
+        logger($message);
+
+        /*event(new MessageSent($message));*/
+
+        broadcast(new MessageSent($message))->toOthers();
+        /*MessageSent::dispatch($message);*/
 
         return response()->json(['message' => 'Message sent successfully']);
     }

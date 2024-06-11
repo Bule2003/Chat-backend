@@ -6,6 +6,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\RegisteredUserController;
 use App\Http\Controllers\SessionController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Resources\MessageResource;
@@ -23,6 +24,8 @@ Route::controller(AuthController::class)->group(function () {
 
 Route::post('conversations', [ConversationController::class, 'create'])->middleware('auth:api');
 Route::delete('conversations/{conversation}', [ConversationController::class, 'destroy'])->middleware('auth:api');
+
+Broadcast::routes(['predix' => 'api', 'middleware' => ['auth:api']]);
 
 Route::middleware('auth:api')->group(function () {
     Route::post('SendMessage', [ConversationController::class, 'SendMessage']);
