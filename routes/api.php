@@ -3,7 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ConversationController;
 use App\Http\Controllers\MessageController;
-use App\Http\Controllers\RegisteredUserController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SessionController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Broadcast;
@@ -34,6 +34,9 @@ Route::middleware('auth:api')->group(function () {
     Route::put('conversations/{conversation}', [ConversationController::class, 'update']);
     Route::get('messages/{conversation}', [MessageController::class, 'index']);
     Route::put('messages/{id}', [MessageController::class, 'update'])->middleware('auth:api');
+    Route::post('uploadUserImage', [ProfileController::class, 'uploadUserImage']);
 });
 
 Route::get('load', [MessageController::class, 'load']);
+
+// TODO: organize routes

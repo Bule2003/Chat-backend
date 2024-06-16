@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\Broadcast;
     return (int) $user->id === (int) $id;
 });*/
 
-Broadcast::channel('chat.{conversationId}', function ($user, int $conversationId) {
-    /*return Auth::check();*/
-    return true;
+Broadcast::channel('chat', function ($user) {
+    return Auth::check();
+    /*return $user->id === $userId;*/
 }, ['guards' => ['api']]);
 

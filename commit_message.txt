@@ -1,0 +1,8 @@
+﻿feat: Add channel broadcasting and private channel authorization
+
+- Implement broadcasting routes and middleware for private channels.
+- Add broadcasting configuration for Pusher in 'broadcasting.php'.
+- Update 'BroadcastServiceProvider.php' to include authorization logic for private channels.
+- Modify broadcasting authentication route to handle 'socket_id' and 'channel_name' parameters.
+- Log incoming broadcasting auth requests for debugging purposes.
+- Ensure proper middleware is applied for API authentication during broadcasting authorization.

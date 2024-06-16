@@ -68,6 +68,11 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
+    public function getImageAttribute($value)
+    {
+        return asset('storage/' . $value);
+    }
+
     public function sentMessages()
     {
         return $this->hasMany(Message::class, 'sender_username', 'username');

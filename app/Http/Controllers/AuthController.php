@@ -46,6 +46,8 @@ class AuthController extends Controller
             'password' => ['required', Password::min(6), 'confirmed']
         ]);
 
+        $defaultImage = 'profile_pictures/user.png';
+
         logger($request);
 
         $user = User::create([
@@ -54,6 +56,7 @@ class AuthController extends Controller
             'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'image' => $defaultImage,
         ]);
 
         $token = Auth::login($user);

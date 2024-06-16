@@ -45,7 +45,7 @@ class MessageSent implements ShouldBroadcast
         /*Log::debug($this->message->conversation_id);*/
         return [
             /*new Channel('chat.' .$this->message->conversation_id),*/
-            new PrivateChannel('chat.' .$this->message->conversation_id),
+            new PrivateChannel('chat'),
         ];
     }
 
